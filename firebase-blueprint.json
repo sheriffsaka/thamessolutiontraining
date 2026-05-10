@@ -1,0 +1,28 @@
+{
+  "entities": {
+    "Course": {
+      "title": "Course",
+      "description": "A training course offered by Thames Solution",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "category": { "type": "string" },
+        "subCategory": { "type": "string" },
+        "desc": { "type": "string" },
+        "longDesc": { "type": "string" },
+        "duration": { "type": "string" },
+        "image": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title", "category", "desc"]
+    }
+  },
+  "firestore": {
+    "/courses/{courseId}": {
+      "schema": "Course",
+      "description": "Collection of all courses"
+    }
+  }
+}
