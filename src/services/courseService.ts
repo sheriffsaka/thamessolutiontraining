@@ -181,6 +181,7 @@ export async function getNavbarCourses() {
       }
 
       hierarchy[cat].items[sub].items.push({
+        id: course.id,
         name: course.title,
         path: `/courses/${course.id}`
       });

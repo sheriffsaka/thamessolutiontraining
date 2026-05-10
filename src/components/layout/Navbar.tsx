@@ -245,7 +245,7 @@ export function Navbar() {
                                         .find((sub: any) => sub.name === activeDeepMenu)?.items || []
                                       ).map((course: any) => (
                                         <Link
-                                          key={course.name}
+                                          key={course.id}
                                           to={course.path}
                                           className="text-[14px] font-bold text-slate-700 hover:text-brand-teal transition-all leading-tight flex items-center gap-4 hover:translate-x-2 font-montserrat"
                                         >
@@ -260,7 +260,7 @@ export function Navbar() {
                                         .flatMap((sub: any) => sub.items || [])
                                       ).map((course: any) => (
                                         <Link
-                                          key={course.name}
+                                          key={course.id}
                                           to={course.path}
                                           className="text-[14px] font-bold text-slate-700 hover:text-brand-teal transition-all leading-tight flex items-center gap-4 hover:translate-x-2 font-montserrat"
                                         >
@@ -348,7 +348,7 @@ export function Navbar() {
                               <div className="grid grid-cols-1 gap-2 pl-4">
                                 {((section.name.toLowerCase().includes('health') && section.name.toLowerCase().includes('social')) ? section.items : []).map((item: any) => (
                                   <Link
-                                    key={item.name}
+                                    key={item.id}
                                     to={item.path}
                                     onClick={() => setIsOpen(false)}
                                     className={cn(
