@@ -75,7 +75,7 @@ function SiteSettingsManager() {
 
   useEffect(() => {
     async function fetchSettings() {
-      const { data } = await supabase.from('site_contents').select('*').eq('id', 'site_settings').single();
+      const { data } = await (supabase.from('site_contents').select('*').eq('id', 'site_settings').single() as any);
       if (data) {
         setSettings(data.content);
       } else {
@@ -102,7 +102,7 @@ function SiteSettingsManager() {
       newSettings[key] = value;
     });
 
-    const { error } = await supabase.from('site_contents').upsert({
+    const { error } = await (supabase.from('site_contents') as any).upsert({
       id: 'site_settings',
       section: 'global',
       content: newSettings,
@@ -233,8 +233,8 @@ function PagesManager() {
       }
     }
 
-    const { error } = await supabase
-      .from('site_contents')
+    const { error } = await (supabase
+      .from('site_contents') as any)
       .upsert({
         id: editingPage.id,
         section: editingPage.section,
@@ -436,7 +436,7 @@ function CourseManager() {
      try {
        // We can now use String IDs safely since we changed the DB column type to TEXT
        for (const mc of mockCourses) {
-         const { error } = await supabase.from('courses').upsert({
+         const { error } = await (supabase.from('courses') as any).upsert({
            id: String(mc.id),
            title: mc.title,
            slug: mc.slug || mc.id,

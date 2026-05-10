@@ -21,14 +21,14 @@ export function StudentDashboard() {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
         // Fetch profile
-        const { data: profileData } = await supabase
+        const { data: profileData } = await (supabase
           .from('profiles')
           .select('*')
           .eq('id', user.id)
-          .single();
+          .single() as any);
         
         setProfile(profileData);
-        if (profileData?.full_name) {
+        if (profileData && profileData.full_name) {
           setUsername(profileData.full_name.split(' ')[0]);
         }
 

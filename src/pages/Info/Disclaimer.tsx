@@ -8,7 +8,7 @@ export function Disclaimer() {
 
   useEffect(() => {
     async function fetchContent() {
-      const { data } = await supabase.from('site_contents').select('*').eq('id', 'disclaimer_content').single();
+      const { data } = await (supabase.from('site_contents').select('*').eq('id', 'disclaimer_content').single() as any);
       if (data) {
         setCmsContent(data.content);
       }

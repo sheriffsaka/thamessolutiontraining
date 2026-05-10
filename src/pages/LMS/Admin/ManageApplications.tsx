@@ -43,8 +43,8 @@ export function ManageApplications() {
         updateData.generated_password = randomPass;
       }
 
-      const { error } = await supabase
-        .from('applications')
+      const { error } = await (supabase
+        .from('applications') as any)
         .update(updateData)
         .eq('id', id);
 

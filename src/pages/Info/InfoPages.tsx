@@ -16,7 +16,7 @@ export function InfoPage({ type }: { type: 'prevent' | 'values' | 'employability
         employability: 'employability_support'
       }[type];
 
-      const { data } = await supabase.from('site_contents').select('*').eq('id', contentId).single();
+      const { data } = await (supabase.from('site_contents').select('*').eq('id', contentId).single() as any);
       if (data) {
         setCmsContent(data.content);
       }

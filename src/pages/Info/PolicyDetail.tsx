@@ -82,7 +82,7 @@ export function PolicyDetail() {
     async function fetchContent() {
       if (!id) return;
       const contentId = `p_${id}`;
-      const { data } = await supabase.from('site_contents').select('*').eq('id', contentId).single();
+      const { data } = await (supabase.from('site_contents').select('*').eq('id', contentId).single() as any);
       if (data) {
         setCmsContent(data.content);
       }

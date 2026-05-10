@@ -57,7 +57,7 @@ export function Login() {
           if (appData) {
             isApproved = true;
             // Try to sync it back to profile
-            await supabase.from('profiles').upsert({ 
+            await (supabase.from('profiles') as any).upsert({ 
               id: data.user.id, 
               is_approved: true,
               email: userEmail,
@@ -73,7 +73,7 @@ export function Login() {
       if (isAdminEmail) {
         try {
           if (!profile || (profile as any).role !== 'admin' || !(profile as any).is_approved) {
-            await supabase.from('profiles').upsert({ 
+            await (supabase.from('profiles') as any).upsert({ 
               id: data.user.id, 
               role: 'admin', 
               is_approved: true,

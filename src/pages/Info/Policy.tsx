@@ -9,7 +9,7 @@ export function Policy() {
 
   useEffect(() => {
     async function fetchContent() {
-      const { data } = await supabase.from('site_contents').select('*').eq('id', 'policies_intro').single();
+      const { data } = await (supabase.from('site_contents').select('*').eq('id', 'policies_intro').single() as any);
       if (data) {
         setCmsContent(data.content);
       }

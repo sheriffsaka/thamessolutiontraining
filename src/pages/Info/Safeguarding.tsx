@@ -9,7 +9,7 @@ export function Safeguarding() {
 
   useEffect(() => {
     async function fetchContent() {
-      const { data } = await supabase.from('site_contents').select('*').eq('id', 'safeguarding_policy').single();
+      const { data } = await (supabase.from('site_contents').select('*').eq('id', 'safeguarding_policy').single() as any);
       if (data) {
         setCmsContent(data.content);
       }

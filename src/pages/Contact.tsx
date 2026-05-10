@@ -20,8 +20,8 @@ export function Contact() {
     const message = formData.get('message') as string;
 
     try {
-      const { error } = await supabase
-        .from('enquiries')
+      const { error } = await (supabase
+        .from('enquiries') as any)
         .insert([{
           full_name: fullName,
           email: email,

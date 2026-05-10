@@ -4,43 +4,12 @@ import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { cn } from '@/src/lib/utils';
 import { getFAQs, getSiteContent } from '@/src/services/contentService';
-
-const categories = [
-  { 
-    title: 'Health & Social Care', 
-    id: 'health-and-social-care',
-    desc: 'Elite clinical and administrative training for modern healthcare sectors.', 
-    image: 'https://res.cloudinary.com/di7okmjsx/image/upload/v1777909848/Training_for_clinical_support_staff_3_rpetqk.jpg?auto=format&fit=crop&q=80&w=800' 
-  },
-  { 
-    title: 'Assessor Courses', 
-    id: 'assessor',
-    desc: 'Professional qualifications for vocational assessors and quality assurance.', 
-    image: 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&q=80&w=800' 
-  },
-  { 
-    title: 'Functional Skills', 
-    id: 'functional-skills',
-    desc: 'Essential English, Maths, and ICT skills for career advancement.', 
-    image: 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&q=80&w=800' 
-  },
-  { 
-    title: 'Mandatory Training', 
-    id: 'mandatory',
-    desc: 'Core compliance training: First Aid, Health & Safety, and Moving & Handling.', 
-    image: 'https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&q=80&w=800' 
-  },
-  { 
-    title: 'Care Certificate', 
-    id: 'care-certificate',
-    desc: 'Foundation standards for workers new to the health and social care sector.', 
-    image: 'https://images.unsplash.com/photo-1576765608535-5f04d1e3f289?auto=format&fit=crop&q=80&w=800' 
-  },
-];
+import { getCategoryData } from '@/src/services/courseService';
 
 export function Home() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [faqs, setFaqs] = useState<any[]>([]);
+  const [dynamicCategories, setDynamicCategories] = useState<any[]>([]);
   const [slides, setSlides] = useState<any[]>([
     {
       title: "Health and Social Care",
@@ -81,10 +50,17 @@ export function Home() {
 
   useEffect(() => {
     async function loadContent() {
-      const [faqData, heroContent] = await Promise.all([
+      const [faqData, heroContent, catData] = await Promise.all([
         getFAQs(),
-        getSiteContent('home')
+        getSiteContent('home'),
+        getCategoryData()
       ]);
+
+      if (catData && catData.length > 0) {
+        setDynamicCategories(catData);
+      } else {
+        setDynamicCategories([]);
+      }
 
       if (faqData && faqData.length > 0) {
         setFaqs(faqData);
@@ -205,9 +181,9 @@ export function Home() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-            {categories.map((cat, i) => (
+            {dynamicCategories.map((cat, i) => (
               <motion.div
-                key={cat.title}
+                key={cat.id || i}
                 initial={{ opacity: 0, y: 40 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}

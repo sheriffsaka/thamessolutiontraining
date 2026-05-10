@@ -1,14 +1,34 @@
+import { useState, useEffect } from 'react';
 import { BookOpen, Plus, Search, Layers, Users as UsersIcon } from 'lucide-react';
 import { cn } from '@/src/lib/utils';
-import { mockCourses } from '@/src/constants/courses';
+import { getCourses } from '@/src/services/courseService';
 
 export function ManageCourses() {
-  const courses = mockCourses.slice(0, 3).map((c, i) => ({
-    ...c,
-    students: [156, 89, 210][i],
-    modules: [12, 8, 5][i],
-    status: i === 1 ? 'Draft' : 'Active'
-  }));
+  const [courses, setCourses] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadCourses() {
+      setIsLoading(true);
+      const data = await getCourses('all');
+      setCourses((data || []).map((c, i) => ({
+        ...c,
+        students: Math.floor(Math.random() * 200) + 50, // Mocked metrics as they aren't in DB yet
+        modules: 10,
+        status: 'Active'
+      })));
+      setIsLoading(false);
+    }
+    loadCourses();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-[400px] flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-brand-teal border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8">

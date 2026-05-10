@@ -31,9 +31,9 @@ export function ManageEnquiries() {
 
   async function updateStatus(id: string, status: 'read' | 'unread' | 'archived') {
     try {
-      const { error } = await supabase
-        .from('enquiries' as any)
-        .update({ status } as any)
+      const { error } = await (supabase
+        .from('enquiries') as any)
+        .update({ status })
         .eq('id', id);
 
       if (error) throw error;

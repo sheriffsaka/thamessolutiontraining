@@ -3,10 +3,8 @@ import { Search, Filter, Clock, GraduationCap, ChevronRight } from 'lucide-react
 import { motion } from 'motion/react';
 import { useState, useEffect } from 'react';
 import { cn } from '@/src/lib/utils';
-import { getCourses } from '@/src/services/courseService';
+import { getCourses, getCategoryData } from '@/src/services/courseService';
 import { Course } from '@/src/lib/supabase';
-
-import { mockCourses, categories } from '@/src/constants/courses';
 
 export function Courses() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -14,48 +12,38 @@ export function Courses() {
   const currentLevel = searchParams.get('level');
   const [searchQuery, setSearchQuery] = useState('');
   const [courses, setCourses] = useState<Course[]>([]);
+  const [dynamicCategories, setDynamicCategories] = useState<{id: string, name: string}[]>([
+    { id: 'all', name: 'All' },
+    { id: 'health-and-social-care', name: 'Health & Social Care' },
+    { id: 'assessor', name: 'Assessor Courses' },
+    { id: 'functional-skills', name: 'Functional Skills' },
+    { id: 'mandatory', name: 'Mandatory Training' },
+    { id: 'care-certificate', name: 'Care Certificate' }
+  ]);
   const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadInitialData() {
+      const catData = await getCategoryData();
+      if (catData && catData.length > 0) {
+        setDynamicCategories([
+          { id: 'all', name: 'All' },
+          ...catData.map(c => ({ id: c.id, name: c.title }))
+        ]);
+      }
+    }
+    loadInitialData();
+  }, []);
 
   useEffect(() => {
     async function loadCourses() {
       setIsLoading(true);
       try {
         const dbData = await getCourses(currentCategory);
-        
-        // Always get applicable mock courses
-        const mockFiltered = mockCourses.filter(c => {
-          const catNorm = c.category?.toLowerCase().replace(/\s+/g, '-').replace(/&/g, 'and');
-          const targetNorm = currentCategory.toLowerCase().replace(/\s+/g, '-').replace(/&/g, 'and');
-          
-          return currentCategory === 'all' || 
-                 c.category === currentCategory ||
-                 catNorm === targetNorm ||
-                 catNorm?.includes(targetNorm) ||
-                 targetNorm.includes(catNorm || '');
-        });
-
-        // Merge and deduplicate by ID or Title to ensure we show everything available
-        const combined = [...(dbData || [])];
-        mockFiltered.forEach(m => {
-          const exists = combined.some(d => 
-            d.id === m.id || 
-            d.title.toLowerCase().trim() === m.title.toLowerCase().trim()
-          );
-          if (!exists) {
-            combined.push(m as any);
-          }
-        });
-        
-        setCourses(combined);
+        setCourses(dbData || []);
       } catch (err) {
         console.error('Error loading courses:', err);
-        // Fallback to purely mock if everything fails
-        const mockFiltered = mockCourses.filter(c => {
-             const catNorm = c.category?.toLowerCase().replace(/\s+/g, '-').replace(/&/g, 'and');
-             const targetNorm = currentCategory.toLowerCase().replace(/\s+/g, '-').replace(/&/g, 'and');
-             return currentCategory === 'all' || catNorm === targetNorm;
-        });
-        setCourses([...mockFiltered] as any);
+        setCourses([]);
       }
       setIsLoading(false);
     }
@@ -105,7 +93,7 @@ export function Courses() {
     // Fallback for categories without specific sub-categories
     if (!groupKey || groupKey.toString().trim() === '') {
       if (currentCategory !== 'all') {
-        const cat = categories.find(c => c.id === currentCategory);
+        const cat = dynamicCategories.find(c => c.id === currentCategory);
         groupKey = cat ? cat.name : 'General';
       } else {
         groupKey = 'General';
@@ -130,7 +118,7 @@ export function Courses() {
         </div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-slate-900 relative z-10">
           <h1 className="text-4xl md:text-5xl font-bold mb-6 font-serif">
-            {currentCategory === 'all' ? 'Our Course Catalog' : categories.find(c => c.id === currentCategory)?.name}
+            {currentCategory === 'all' ? 'Our Course Catalog' : dynamicCategories.find(c => c.id === currentCategory)?.name}
           </h1>
           <p className="text-slate-600 text-lg max-w-2xl mx-auto font-medium">
             {currentLevel ? `Showing courses for ${currentLevel}` : 'Browse our wide range of professional courses designed to help you succeed in today\'s competitive job market.'}
@@ -154,7 +142,7 @@ export function Courses() {
                 />
               </div>
               <div className="flex gap-2 overflow-x-auto pb-2 w-full lg:w-auto custom-scrollbar">
-                {categories.map((cat) => (
+                {dynamicCategories.map((cat) => (
                   <button
                     key={cat.id}
                     onClick={() => setSearchParams(cat.id === 'all' ? {} : { category: cat.id })}
@@ -186,7 +174,7 @@ export function Courses() {
                   <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
                   <input
                     type="text"
-                    placeholder={`Search in ${categories.find(c => c.id === currentCategory)?.name}...`}
+                    placeholder={`Search in ${dynamicCategories.find(c => c.id === currentCategory)?.name}...`}
                     className="w-full pl-14 pr-4 py-4.5 rounded-xl bg-slate-50 border border-slate-100 focus:border-brand-teal outline-none text-slate-900 transition-all placeholder:text-slate-400 font-medium"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}

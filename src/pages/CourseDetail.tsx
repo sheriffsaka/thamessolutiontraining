@@ -4,7 +4,6 @@ import { CheckCircle2, Clock, Award, Shield, ArrowLeft, Mail, Phone, User, Messa
 import { motion, AnimatePresence } from 'motion/react';
 import { supabase } from '@/src/lib/supabase';
 import { getCourseById } from '@/src/services/courseService';
-import { mockCourses } from '@/src/constants/courses';
 
 export function CourseDetail() {
   const { id } = useParams();
@@ -21,10 +20,6 @@ export function CourseDetail() {
       const data = await getCourseById(id);
       if (data) {
         setCourse(data);
-      } else {
-        // Fallback to mock data if not found in Supabase
-        const mock = mockCourses.find(c => c.id === id);
-        setCourse(mock || null);
       }
       setLoading(false);
     }
@@ -65,8 +60,8 @@ export function CourseDetail() {
 
       console.log('Attempting to submit application:', applicationPayload);
 
-      const { error: appError } = await supabase
-        .from('applications')
+      const { error: appError } = await (supabase
+        .from('applications') as any)
         .insert([applicationPayload]);
 
       if (appError) {
@@ -90,8 +85,8 @@ export function CourseDetail() {
           status: 'active'
         };
 
-        const { error: enrollError } = await supabase
-          .from('enrollments')
+        const { error: enrollError } = await (supabase
+          .from('enrollments') as any)
           .insert([enrollmentPayload]);
           
         if (enrollError) {
@@ -99,8 +94,8 @@ export function CourseDetail() {
           
           // Fallback if student_id column is actually named user_id
           if (enrollError.message.includes('column "student_id" does not exist')) {
-            await supabase
-              .from('enrollments')
+            await (supabase
+              .from('enrollments') as any)
               .insert([{
                 user_id: user.id,
                 course_id: course.id,

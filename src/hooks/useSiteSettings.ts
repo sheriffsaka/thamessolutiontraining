@@ -32,11 +32,11 @@ export function useSiteSettings() {
   useEffect(() => {
     async function fetchSettings() {
       try {
-        const { data, error } = await supabase
+        const { data, error } = await (supabase
           .from('site_contents')
           .select('content')
           .eq('id', 'site_settings')
-          .single();
+          .single() as any);
 
         if (data && data.content) {
           setSettings(data.content as SiteSettings);
