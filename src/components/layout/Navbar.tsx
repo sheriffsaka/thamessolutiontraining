@@ -1,159 +1,70 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, ChevronDown, User, Bell } from 'lucide-react';
 import { Logo } from '@/src/components/ui/Logo';
 import { cn } from '@/src/lib/utils';
 import { motion, AnimatePresence } from 'motion/react';
 import { useSiteSettings } from '@/src/hooks/useSiteSettings';
-
-const navLinks: any[] = [
-  {
-    name: 'About',
-    children: [
-      { name: 'About Us', path: '/about' },
-      { name: 'Policy & Procedures', path: '/policy' },
-      { name: 'Disclaimer', path: '/disclaimer' },
-    ],
-  },
-  {
-    name: 'Courses',
-    isHierarchical: true,
-    children: [
-      {
-        name: 'Health and Social Care',
-        id: 'hsc',
-        path: '/courses?category=health-and-social-care',
-        items: [
-          { 
-            name: 'Level 2 Qualifications', 
-            path: '/courses?category=health-and-social-care&level=Level 2 Qualifications',
-            items: [
-              { name: 'Adult Social Care Certificate', path: '/courses/hsc-l2-1' },
-              { name: 'Diploma in Clinical Healthcare Support', path: '/courses/hsc-l2-2' },
-              { name: 'Diploma in Care', path: '/courses/hsc-l2-3' },
-            ]
-          },
-          { 
-            name: 'Level 3 Qualifications', 
-            path: '/courses?category=health-and-social-care&level=Level 3 Qualifications',
-            items: [
-              { name: 'Diploma in Adult Care', path: '/courses/hsc-l3-1' },
-              { name: 'Health and Social Care (Adult)', path: '/courses/hsc-l3-2' },
-              { name: 'Healthcare Support Service', path: '/courses/hsc-l3-3' },
-            ]
-          },
-          { 
-            name: 'Level 5 Qualifications', 
-            path: '/courses?category=health-and-social-care&level=Level 5 Qualifications',
-            items: [
-              { name: 'Diploma in HSC and CYP', path: '/courses/hsc-l5-1' },
-              { name: 'Diploma in Leadership & Management', path: '/courses/hsc-l5-2' },
-            ]
-          },
-          { 
-            name: 'Child Care', 
-            path: '/courses?category=health-and-social-care&level=Child Care',
-            items: [
-              { name: 'Diploma for Residential Childcare', path: '/courses/cc-l3-1' },
-              { name: 'Diploma in Early Years Educator', path: '/courses/cc-l3-2' },
-              { name: 'Children’s Learning & Development', path: '/courses/cc-l3-3' },
-              { name: 'L5 Leadership for Residential Childcare', path: '/courses/cc-l5-1' },
-            ]
-          },
-        ]
-      },
-      {
-        name: 'Assessor Courses',
-        id: 'assessor',
-        path: '/courses?category=assessor',
-        items: [
-          { 
-            name: 'Assessors Awards', 
-            path: '/courses?category=assessor',
-            items: [
-              { name: 'Level 3 Award in Assessing Competency', path: '/courses/ac-l3-1' },
-              { name: 'Level 3 Certificate in Assessing Vocational Achievement', path: '/courses/ac-l3-2' },
-            ]
-          },
-        ]
-      },
-      {
-        name: 'Functional Skills',
-        id: 'functional',
-        path: '/courses?category=functional-skills',
-        items: [
-          { 
-            name: 'English & Maths', 
-            path: '/courses?category=functional-skills',
-            items: [
-              { name: 'Level 2 English', path: '/courses/fs-en-l2' },
-              { name: 'Level 2 Maths', path: '/courses/fs-mt-l2' },
-            ]
-          },
-        ]
-      },
-      {
-        name: 'Mandatory Training',
-        id: 'mandatory',
-        path: '/courses?category=mandatory',
-        items: [
-          { 
-            name: 'Compliance Training', 
-            path: '/courses?category=mandatory',
-            items: [
-              { name: 'Manual Handling', path: '/courses/mt-mh' },
-              { name: 'First Aid', path: '/courses/mt-fa' },
-              { name: 'Health & Safety', path: '/courses/mt-hs' },
-              { name: 'Safeguarding', path: '/courses/mt-sg' },
-              { name: 'GDPR', path: '/courses/mt-gdpr' },
-              { name: 'Fire Safety', path: '/courses/mt-fs' },
-              { name: 'Dementia Awareness', path: '/courses/mt-da' },
-              { name: 'End of Life Care', path: '/courses/mt-eol' },
-              { name: 'Equally & Diversity', path: '/courses/mt-ed' },
-              { name: 'Infection Control', path: '/courses/mt-ic' },
-              { name: 'Medication Awareness', path: '/courses/mt-ma' },
-              { name: 'Mental Capacity', path: '/courses/mt-mc' },
-              { name: 'Food Hygiene', path: '/courses/mt-fh' },
-            ]
-          },
-        ]
-      },
-      {
-        name: 'Care Certificate',
-        id: 'care-certificate',
-        path: '/courses?category=care-certificate',
-        items: [
-          { 
-            name: 'Standard Modules', 
-            path: '/courses?category=care-certificate',
-            items: [
-              { name: 'Care Certificate (15 Standards)', path: '/courses/cc-15' },
-            ]
-          },
-        ]
-      },
-    ],
-  },
-  { name: 'Employability', path: '/employability' },
-  {
-    name: 'Safeguard & Prevent',
-    children: [
-      { name: 'Safeguarding Hub', path: '/safeguarding' },
-      { name: 'Prevent Duty', path: '/prevent-duty' },
-      { name: 'British Values', path: '/british-values' },
-    ],
-  },
-  { name: 'Contact Us', path: '/contact' },
-];
+import { getNavbarCourses } from '@/src/services/courseService';
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [activeSubMenu, setActiveSubMenu] = useState<string | null>(null);
   const [activeDeepMenu, setActiveDeepMenu] = useState<string | null>(null);
+  const [navLinks, setNavLinks] = useState<any[]>([
+    {
+      name: 'About',
+      children: [
+        { name: 'About Us', path: '/about' },
+        { name: 'Policy & Procedures', path: '/policy' },
+        { name: 'Disclaimer', path: '/disclaimer' },
+      ],
+    },
+    {
+      name: 'Courses',
+      path: '/courses',
+      isHierarchical: true,
+      children: []
+    },
+    { name: 'Employability', path: '/employability' },
+    {
+      name: 'Safeguard & Prevent',
+      children: [
+        { name: 'Safeguarding Hub', path: '/safeguarding' },
+        { name: 'Prevent Duty', path: '/prevent-duty' },
+        { name: 'British Values', path: '/british-values' },
+      ],
+    },
+    { name: 'Contact Us', path: '/contact' },
+  ]);
+
   const location = useLocation();
   const isHome = location.pathname === '/';
   const { settings } = useSiteSettings();
+
+  useEffect(() => {
+    async function loadNavData() {
+      const coursesData = await getNavbarCourses();
+      if (coursesData && coursesData.length > 0) {
+        setNavLinks(prev => prev.map(link => 
+          link.name === 'Courses' ? { ...link, children: coursesData } : link
+        ));
+      } else {
+        // Minimum empty state for Courses to avoid breaking UI if DB empty
+        setNavLinks(prev => prev.map(link => 
+          link.name === 'Courses' ? { 
+            ...link, 
+            children: [
+              { name: 'Health and social care', id: 'health-and-social-care', path: '/courses?category=health-and-social-care', items: [] },
+              { name: 'Assessor courses', id: 'assessor', path: '/courses?category=assessor', items: [] }
+            ] 
+          } : link
+        ));
+      }
+    }
+    loadNavData();
+  }, []);
 
   return (
     <>
@@ -194,7 +105,7 @@ export function Navbar() {
                 className="relative h-full flex items-center"
                 onMouseEnter={() => {
                   setActiveDropdown(link.name);
-                  if (link.isHierarchical && link.children) {
+                  if (link.isHierarchical && link.children && link.children.length > 0) {
                     setActiveSubMenu(link.children[0].name);
                   }
                 }}
@@ -248,7 +159,8 @@ export function Navbar() {
                                 key={section.name}
                                 onMouseEnter={() => {
                                   setActiveSubMenu(section.name);
-                                  if (section.items && section.items.length > 0) {
+                                  const isHSC = section.name.toLowerCase().includes('health') && section.name.toLowerCase().includes('social');
+                                  if (isHSC && section.items && section.items.length > 0) {
                                     setActiveDeepMenu(section.items[0].name);
                                   } else {
                                     setActiveDeepMenu(null);
@@ -265,7 +177,7 @@ export function Navbar() {
                                 )}>
                                   {section.name}
                                 </span>
-                                {section.name === 'Health and Social Care' && <ChevronDown size={14} className="-rotate-90 opacity-40 group-hover:translate-x-1 transition-transform" />}
+                                {(section.name.toLowerCase().includes('health') && section.name.toLowerCase().includes('social')) ? <ChevronDown size={14} className="-rotate-90 opacity-40 group-hover:translate-x-1 transition-transform" /> : null}
                               </div>
                             ))}
                           </div>
@@ -273,10 +185,10 @@ export function Navbar() {
                           {/* Sub-categories (Level 2) - Only show for Health and Social Care */}
                           <div className={cn(
                             "w-[35%] bg-white border-r border-slate-100 py-6",
-                            activeSubMenu !== 'Health and Social Care' && "hidden"
+                            (!activeSubMenu || !(activeSubMenu.toLowerCase().includes('health') && activeSubMenu.toLowerCase().includes('social')) || (link.children.find((s: any) => s.name === activeSubMenu)?.items?.length || 0) === 0) && "hidden"
                           )}>
                             <AnimatePresence mode="wait">
-                              {activeSubMenu === 'Health and Social Care' && (
+                              {activeSubMenu && (
                                 <motion.div
                                   key={activeSubMenu}
                                   initial={{ opacity: 0, x: 10 }}
@@ -303,30 +215,31 @@ export function Navbar() {
                             </AnimatePresence>
                           </div>
 
-                          {/* Final Courses (Level 3 or Level 2 for non-HSC) */}
+                          {/* Final Courses */}
                           <div className="flex-1 bg-white p-12">
                             <AnimatePresence mode="wait">
                               {activeSubMenu && (
                                 <motion.div
-                                  key={activeSubMenu === 'Health and Social Care' ? activeDeepMenu : activeSubMenu}
+                                  key={activeDeepMenu || activeSubMenu}
                                   initial={{ opacity: 0, x: 10 }}
                                   animate={{ opacity: 1, x: 0 }}
                                   exit={{ opacity: 0, x: -10 }}
                                   className="space-y-8"
                                 >
                                   <h4 className="text-[11px] font-black uppercase tracking-[0.4em] text-brand-teal mb-8 border-b border-slate-100 pb-4 inline-block font-montserrat">
-                                    {activeSubMenu === 'Health and Social Care' ? activeDeepMenu : activeSubMenu}
+                                    {activeDeepMenu || activeSubMenu}
                                   </h4>
                                   <div className={cn(
                                     "grid gap-x-12 gap-y-6",
-                                    (activeSubMenu === 'Health and Social Care' 
-                                      ? (link.children.find((s: any) => s.name === activeSubMenu)?.items || []).find((sub: any) => sub.name === activeDeepMenu)?.items?.length || 0
-                                      : (link.children.find((s: any) => s.name === activeSubMenu)?.items || []).flatMap((sub: any) => sub.items || []).length || 0) > 8 
+                                    (
+                                      (link.children.find((s: any) => s.name === activeSubMenu)?.items || []).find((sub: any) => sub.name === activeDeepMenu)?.items?.length || 
+                                      (link.children.find((s: any) => s.name === activeSubMenu)?.items || []).flatMap((sub: any) => sub.items || []).length || 0
+                                    ) > 8 
                                       ? "grid-cols-2" 
                                       : "grid-cols-1"
                                   )}>
-                                    {activeSubMenu === 'Health and Social Care' ? (
-                                      // HSC Logic (3 levels)
+                                    {activeDeepMenu ? (
+                                      // Deep level
                                       (
                                         (link.children.find((s: any) => s.name === activeSubMenu)?.items || [])
                                         .find((sub: any) => sub.name === activeDeepMenu)?.items || []
@@ -341,7 +254,7 @@ export function Navbar() {
                                         </Link>
                                       ))
                                     ) : (
-                                      // Others Logic (2 levels: Category -> Courses)
+                                      // Flat level
                                       (
                                         (link.children.find((s: any) => s.name === activeSubMenu)?.items || [])
                                         .flatMap((sub: any) => sub.items || [])
@@ -433,7 +346,7 @@ export function Navbar() {
                                 {section.name}
                               </Link>
                               <div className="grid grid-cols-1 gap-2 pl-4">
-                                {section.items.map((item: any) => (
+                                {((section.name.toLowerCase().includes('health') && section.name.toLowerCase().includes('social')) ? section.items : []).map((item: any) => (
                                   <Link
                                     key={item.name}
                                     to={item.path}

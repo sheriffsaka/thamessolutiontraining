@@ -12,35 +12,35 @@ export function Home() {
   const [dynamicCategories, setDynamicCategories] = useState<any[]>([]);
   const [slides, setSlides] = useState<any[]>([
     {
-      title: "Health and Social Care",
+      title: "Health and social care",
       subtitle: "Professional Excellence",
       desc: "Empowering healthcare professionals with accredited Level 2 to Level 5 diplomas and specialized childcare qualifications.",
       video: "https://res.cloudinary.com/di7okmjsx/video/upload/v1777705199/health-socialworker1_kfe1oe.mp4",
       link: "/courses?category=health-and-social-care"
     },
     {
-      title: "Assessor Courses",
+      title: "Assessor courses",
       subtitle: "Vocational Mastery",
       desc: "Achieve the gold standard in vocational assessment with our RQF Level 3 Award and Certificate programs.",
       video: "https://res.cloudinary.com/di7okmjsx/video/upload/v1777509647/the-trainer-in-the-gray-blazer-speaks-and-gestures_oir7sf.mp4",
       link: "/courses?category=assessor"
     },
     {
-      title: "Functional Skills",
+      title: "Functional skills",
       subtitle: "Essential Foundations",
       desc: "Future-proof your career with Level 2 English and Maths qualifications essential for professional growth.",
       video: "https://res.cloudinary.com/di7okmjsx/video/upload/v1777656036/FunctionalTraining_exmzfz.mp4",
       link: "/courses?category=functional-skills"
     },
     {
-      title: "Mandatory Training",
+      title: "Mandatory training",
       subtitle: "Compliance Excellence",
       desc: "Ensure 100% workplace compliance with essential training in First Aid, Safeguarding, Mental Capacity, and more.",
       video: "https://res.cloudinary.com/di7okmjsx/video/upload/v1777664670/care_cert_ules5v.mp4",
       link: "/courses?category=mandatory"
     },
     {
-      title: "Care Certificate",
+      title: "Care certificate",
       subtitle: "Foundation Standards",
       desc: "Master the 15 fundamental standards of care required for all health and social care professionals in the UK.",
       video: "https://res.cloudinary.com/di7okmjsx/video/upload/v1777664670/care_cert_ules5v.mp4",

@@ -14,11 +14,11 @@ export function Courses() {
   const [courses, setCourses] = useState<Course[]>([]);
   const [dynamicCategories, setDynamicCategories] = useState<{id: string, name: string}[]>([
     { id: 'all', name: 'All' },
-    { id: 'health-and-social-care', name: 'Health & Social Care' },
-    { id: 'assessor', name: 'Assessor Courses' },
-    { id: 'functional-skills', name: 'Functional Skills' },
-    { id: 'mandatory', name: 'Mandatory Training' },
-    { id: 'care-certificate', name: 'Care Certificate' }
+    { id: 'health-and-social-care', name: 'Health and social care' },
+    { id: 'assessor', name: 'Assessor courses' },
+    { id: 'functional-skills', name: 'Functional skills' },
+    { id: 'mandatory', name: 'Mandatory training' },
+    { id: 'care-certificate', name: 'Care certificate' }
   ]);
   const [isLoading, setIsLoading] = useState(true);
 
